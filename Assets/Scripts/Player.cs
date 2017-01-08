@@ -1,14 +1,13 @@
 ﻿using UnityEngine;
-using System.Collections;
 using UnityEngine.UI;
 using UnityStandardAssets.ImageEffects;
 
 public class Player : MonoBehaviour {
 
     public float movementSpeed = 5, rotationSpeed = 60, forceMagnitude = 30000, forcePushEnemy = 1000; GameObject forceUI;
-    private GBAlg2 GBAlgManager;
-    private BlockControl bc;
+    private Main GBAlgManager;
     Camera cam;
+    Main main;
 
     void Start ()
     {
@@ -16,9 +15,8 @@ public class Player : MonoBehaviour {
         forceUI.GetComponent<Text>().text = forceMagnitude.ToString();
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
-        GBAlgManager = FindObjectOfType<GBAlg2>();
-        bc = FindObjectOfType<BlockControl>();
         cam = FindObjectOfType<Camera>();
+        main = FindObjectOfType<Main>();
     }
 	
 	void Update ()
@@ -35,17 +33,24 @@ public class Player : MonoBehaviour {
         if (Input.GetKeyDown(KeyCode.Mouse0))
         {
             RaycastHit h;
-            if(Physics.Raycast(transform.position, transform.forward, out h))
+            if(Physics.Raycast(cam.transform.position, cam.transform.forward, out h))
             {
-                if(h.collider.gameObject.tag == "block")
+                GameObject something = h.collider.gameObject;
+
+                if(h.collider.gameObject.tag == "building")
                 {
-                    GBAlgManager.splitIntoCubes(h.collider.gameObject);
-                    bc.isRecording = true;
-                    addForce(h.point);
+                    BlockScheme b = Town.buildings[something].setBlockInvisible(h.point);
+                    Destroy(something);
+                    Town.buildings[something].computeNeighbors();
+                    Town.buildings[something].makeBuilding();
+                    Town.buildings[something].splitBlock(b);
+                    //GBAlgManager.splitIntoCubes(h.collider.gameObject);
+                    //bc.isRecording = true;
+                    //addForce(h.point);
                 }
-                if(h.collider != null && h.collider.gameObject.tag == "enemy_body_part")
+                if(h.collider != null && something.tag == "enemy_body_part")
                 {
-                    h.collider.gameObject.transform.root.GetComponent<Enemy>().kill(forcePushEnemy, h.point);
+                    something.transform.root.GetComponent<Enemy>().kill(forcePushEnemy, h.point);
                     //h.collider.gameObject.GetComponent<Enemy_Part>().push(forcePushEnemy, h.point);
                 }
             }
