@@ -1,21 +1,20 @@
 ﻿public class BlockScheme
 {
-    public bool split;
-    public bool composite;
-    public int prevSplitX, prevSplitY, prevSplitZ;
-    public BlockScheme[,,] innerBlocks;
+    public BlockScheme parent;
+    public BlockScheme[,,] children;
+    public BlockScheme[,,] parentBlockSchemes;
     public Vector3Int position;
-    public Neighbors neigbors;
+    public Neighbors neighbors;
     public bool visible;
-    public BlockScheme(bool split, bool composite, int x, int y, int z, BlockScheme[,,] innerBlocks, Vector3Int position)
+    public Vector3Int blockSize;
+    public BlockScheme(BlockScheme[,,] children, Vector3Int position, Vector3Int blockSize,
+        BlockScheme[,,] parentBlockSchemes = null, BlockScheme parent = null)
     {
-        this.split = split;
-        this.composite = composite;
-        this.innerBlocks = innerBlocks;
-        this.prevSplitX = x;
-        this.prevSplitY = y;
-        this.prevSplitZ = z;
+        this.children = children;
         this.position = position;
         this.visible = true;
+        this.parent = parent;
+        this.blockSize = blockSize;
+        this.parentBlockSchemes = parentBlockSchemes;
     }
 }

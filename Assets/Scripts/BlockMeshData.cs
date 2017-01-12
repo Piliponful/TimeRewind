@@ -37,16 +37,16 @@ public class BlockMeshData
         this.triIndexEnd = startIndex;
 
         // Front quad
-        LeftBottomP = new Vector3(x * sizeX + 0, y * sizeY + 0, z * sizeZ + sizeZ);
-        LeftUpperP = new Vector3(x * sizeX + 0, y * sizeY + sizeY, z * sizeZ + sizeZ);
-        RightBottomP = new Vector3(x * sizeX + sizeX, y * sizeY + 0, z * sizeZ + sizeZ);
-        RightUpperP = new Vector3(x * sizeX + sizeX, y * sizeY + sizeY, z * sizeZ + sizeZ);
+        LeftBottomP = new Vector3(x + 0, y + 0, z + sizeZ);
+        LeftUpperP = new Vector3(x + 0, y + sizeY, z + sizeZ);
+        RightBottomP = new Vector3(x + sizeX, y + 0, z + sizeZ);
+        RightUpperP = new Vector3(x + sizeX, y + sizeY, z + sizeZ);
 
         // Back quad
-        BackleftBottomP = new Vector3(x * sizeX + 0, y * sizeY + 0, z * sizeZ);
-        BackLeftUpperP = new Vector3(x * sizeX + 0, y * sizeY + sizeY, z * sizeZ);
-        BackRightBottomP = new Vector3(x * sizeX + sizeX, y * sizeY + 0, z * sizeZ);
-        BackRightUpperP = new Vector3(x * sizeX + sizeX, y * sizeY + sizeY, z * sizeZ);
+        BackleftBottomP = new Vector3(x + 0, y + 0, z);
+        BackLeftUpperP = new Vector3(x + 0, y + sizeY, z);
+        BackRightBottomP = new Vector3(x + sizeX, y + 0, z);
+        BackRightUpperP = new Vector3(x + sizeX, y + sizeY, z);
     }
 
     public void generateCubeMeshData()
@@ -66,17 +66,17 @@ public class BlockMeshData
     void generateVerts4Cube()
     {
         // Add verts(of predefinded points) to list so that thay form a cube
-        if (!cubeScheme.neigbors.frontNeighbor)
+        if (!cubeScheme.neighbors.frontNeighbor)
             addFrontFaceVerts();
-        if (!cubeScheme.neigbors.backNeighbor)
+        if (!cubeScheme.neighbors.backNeighbor)
             addBackFaceVerts();
-        if (!cubeScheme.neigbors.rightNeighbor)
+        if (!cubeScheme.neighbors.rightNeighbor)
             addRightFaceVerts();
-        if (!cubeScheme.neigbors.leftNeighbor)
+        if (!cubeScheme.neighbors.leftNeighbor)
             addLeftFaceVerts();
-        if (!cubeScheme.neigbors.topNeighbor)
+        if (!cubeScheme.neighbors.topNeighbor)
             addUpFaceVerts();
-        if (!cubeScheme.neigbors.bottomNeighbor)
+        if (!cubeScheme.neighbors.bottomNeighbor)
             addBottomFaceVerts();
     }
 

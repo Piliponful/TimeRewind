@@ -46,7 +46,7 @@ public static class Town {
             {
                 Vector3 buildingWorldPosition = new Vector3(x * cubeSize.x * buildingWidth + (x * gutter), 0,
                 z * cubeSize.z * buildingLength + (z * gutter));
-                Building building = new Building(buildingWidth, buildingHeight, buildingLength, cubeSize, buildingWorldPosition);
+                Building building = new Building(buildingWidth, buildingHeight, buildingLength, cubeSize, buildingWorldPosition, null);
                 building.computeBuilding();
                 building.makeBuilding();
             }

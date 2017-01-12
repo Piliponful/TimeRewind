@@ -41,8 +41,7 @@ public class Player : MonoBehaviour {
                 {
                     BlockScheme b = Town.buildings[something].setBlockInvisible(h.point);
                     Destroy(something);
-                    Town.buildings[something].computeNeighbors();
-                    Town.buildings[something].makeBuilding();
+                    Town.buildings[something].reBuild();
                     Town.buildings[something].splitBlock(b);
                     //GBAlgManager.splitIntoCubes(h.collider.gameObject);
                     //bc.isRecording = true;
