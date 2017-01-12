@@ -42,29 +42,40 @@ public class Building
                 for (int z = 0; z < length; z++)
                 {
                     if (Random.value > .5)
+                    {
                         this.buildingScheme[x, y, z] = null;
+                    }
                     else
-                        if(Random.value > .4)
-                            this.buildingScheme[x, y, z] = new BlockScheme(null, new Vector3Int(x, y, z).multiply(this.blockSize).add(this.worldPosition));
+                    {
+                        Vector3Int position = new Vector3Int(x, y, z).multiply(this.blockSize).add(this.worldPosition);
+                        if(Random.value > .5)
+                        {
+                            this.buildingScheme[x, y, z] = new BlockScheme(null, position, blockSize);
+                        }
                         else
-                            this.buildingScheme[x, y, z] = new BlockScheme(makeChildrenScheme)
+                        {
+                            this.buildingScheme[x, y, z] = new BlockScheme(makeChildrenScheme(position), position, blockSize);
+                        }
+                    }
                 }
             }
         }
     }
 
-    public void makeChildrenScheme(BlockScheme[,,] children, Vector3Int childrenBlockSize, Vector3Int parentPosition)
+    public BlockScheme[,,] makeChildrenScheme(Vector3Int parentPosition)
     {
+        BlockScheme[,,] children = new BlockScheme[1, 1, 1];
         for (int x = 0; x < children.GetLength(0); x++)
         {
             for (int y = 0; y < children.GetLength(1); y++)
             {
                 for (int z = 0; z < children.GetLength(2); z++)
                 {
-                    children[x, y, z] = new BlockScheme(null, parentPosition.add(new Vector3Int(x, y, z)));
+                    children[x, y, z] = new BlockScheme(null, parentPosition.add(new Vector3Int(x, y, z)), null);
                 }
             }
         }
+        return children;
     }
 
     public void computeNeighbors()
