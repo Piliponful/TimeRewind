@@ -8,8 +8,9 @@ public class Building
     public Vector3Int blockSize;
     public BlockScheme[,,] buildingScheme;
     private Vector3 worldPosition;
+    public Vector3Int childDimensions;
 
-    public Building(int width, int height, int length, Vector3Int blockSize, Vector3 worldPosition)
+    public Building(int width, int height, int length, Vector3Int blockSize, Vector3 worldPosition, Vector3Int childDimensions)
     {
         this.width = width; this.height = height; this.length = length;
         this.buildingScheme = new BlockScheme[width, height, length];
@@ -18,6 +19,7 @@ public class Building
         this.lengthOfSingleBlock = blockSize.z;
         this.blockSize = blockSize;
         this.worldPosition = worldPosition;
+        this.childDimensions = childDimensions;
     }
 
     public void computeBuilding()
@@ -51,12 +53,11 @@ public class Building
                         Vector3Int position = new Vector3Int(x, y, z).multiply(this.blockSize).add(this.worldPosition);
                         if(Random.value > .5)
                         {
-                            this.buildingScheme[x, y, z] = new BlockScheme(null, position, blockSize);
+                            this.buildingScheme[x, y, z] = new BlockScheme(null, null, position, blockSize);
                         }
                         else
                         {
-                            this.buildingScheme[x, y, z] = new BlockScheme(makeChildrenScheme(position), position, blockSize);
-                            //this.buildingScheme[x, y, z].visible = false;
+                            this.buildingScheme[x, y, z] = makeScheme(position);
                         }
                     }
                 }
@@ -64,22 +65,26 @@ public class Building
         }
     }
 
-    public BlockScheme[,,] makeChildrenScheme(Vector3Int parentPosition)
+    public BlockScheme makeScheme(Vector3Int position)
     {
-        Vector3Int dimensions = childrenDimensions();
-        Vector3Int size = blockSize.div(dimensions);
-        BlockScheme[,,] children = new BlockScheme[dimensions.x, dimensions.y, dimensions.z];
+        if(childDimensions == null)
+        {
+            this.childDimensions = childrenDimensions();
+        }
+        Vector3Int size = blockSize.div(this.childDimensions);
+        BlockScheme[,,] children = new BlockScheme[childDimensions.x, childDimensions.y, childDimensions.z];
+        BlockScheme parent = new BlockScheme(children, null, position, blockSize);
         for (int x = 0; x < children.GetLength(0); x++)
         {
             for (int y = 0; y < children.GetLength(1); y++)
             {
                 for (int z = 0; z < children.GetLength(2); z++)
                 {
-                    children[x, y, z] = new BlockScheme(null, parentPosition.add(new Vector3Int(x, y, z).multiply(size)), size);
+                    children[x, y, z] = new BlockScheme(null, parent, position.add(new Vector3Int(x, y, z).multiply(size)), size);
                 }
             }
         }
-        return children;
+        return parent;
     }
 
 
@@ -123,6 +128,7 @@ public class Building
 
     public void computeNeighbors()
     {
+        List<BlockScheme> parents = new List<BlockScheme>();
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
@@ -131,8 +137,31 @@ public class Building
                 {
                     if (this.buildingScheme[x, y, z] != null && this.buildingScheme[x, y, z].visible)
                     {
+                        if (this.buildingScheme[x, y, z].children != null)
+                            parents.Add(this.buildingScheme[x, y, z]);
                         NeighborsDetection nd = new NeighborsDetection(this.buildingScheme);
                         this.buildingScheme[x, y, z].neigbors = nd.getNeigbors(x, y, z);
+                    }
+                }
+            }
+        }
+
+        foreach (BlockScheme parent in parents)
+            computeChildNeighbors(parent);
+    }
+
+    public void computeChildNeighbors(BlockScheme parent)
+    {
+        for (int x = 0; x < parent.children.GetLength(0); x++)
+        {
+            for (int y = 0; y < parent.children.GetLength(1); y++)
+            {
+                for (int z = 0; z < parent.children.GetLength(2); z++)
+                {
+                    if (parent.children[x, y, z] != null && parent.children[x, y, z].visible)
+                    {
+                        NeighborsDetection nd = new NeighborsDetection(parent.children);
+                        parent.children[x, y, z].neigbors = nd.getChildNeighbors(x, y, z, parent);
                     }
                 }
             }
