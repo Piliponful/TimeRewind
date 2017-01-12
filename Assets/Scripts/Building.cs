@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Collections.Generic;
 
 public class Building
 {
@@ -64,19 +65,60 @@ public class Building
 
     public BlockScheme[,,] makeChildrenScheme(Vector3Int parentPosition)
     {
-        BlockScheme[,,] children = new BlockScheme[1, 1, 1];
+        Vector3Int dimensions = childrenDimensions();
+        Vector3Int size = blockSize.div(dimensions);
+        BlockScheme[,,] children = new BlockScheme[dimensions.x, dimensions.y, dimensions.z];
         for (int x = 0; x < children.GetLength(0); x++)
         {
             for (int y = 0; y < children.GetLength(1); y++)
             {
                 for (int z = 0; z < children.GetLength(2); z++)
                 {
-                    children[x, y, z] = new BlockScheme(null, parentPosition.add(new Vector3Int(x, y, z)), null);
+                    children[x, y, z] = new BlockScheme(null, parentPosition.add(new Vector3Int(x, y, z).multiply(size)), size);
                 }
             }
         }
         return children;
     }
+
+
+    private Vector3Int childrenDimensions()
+    {
+        int[] possibleDivisorsX, possibleDivisorsY, possibleDivisorsZ;
+
+        possibleDivisorsX = findDivisors(this.blockSize.x).ToArray();
+        possibleDivisorsY = findDivisors(this.blockSize.y).ToArray();
+        possibleDivisorsZ = findDivisors(this.blockSize.z).ToArray();
+
+        return new Vector3Int(pickRandom(possibleDivisorsX), pickRandom(possibleDivisorsY), pickRandom(possibleDivisorsZ));
+    }
+
+    private int pickRandom(int[] numbers)
+    {
+        int i = 0;
+        while (true)
+        {
+            if (Random.value > .5)
+                return numbers[i];
+            i++;
+            if (i == numbers.Length)
+                i = 0;
+        }
+    }
+
+    private List<int> findDivisors(int number)
+    {
+        List<int> allPossibleDivisors = new List<int>();
+        foreach (int divisor in Utils.NaturalNumbers())
+        {
+            if (divisor >= 100)
+                return allPossibleDivisors;
+            if (number % divisor == 0)
+                allPossibleDivisors.Add(divisor);
+        }
+        return null;
+    }
+
 
     public void computeNeighbors()
     {

@@ -54,7 +54,7 @@ public class Vector3Int
 
     private int multipleOfSize (int x)
     {
-        foreach (int num in NaturalNumbers())
+        foreach (int num in Utils.NaturalNumbers())
         {
             int multiple = 6;
             int curMultiple = multiple * num;
@@ -67,13 +67,8 @@ public class Vector3Int
         return x;
     }
 
-    public static IEnumerable<int> NaturalNumbers()
+    public Vector3Int div(Vector3Int vi)
     {
-        int value = 0;
-        for (;;)
-        {
-            value++;
-            yield return value;
-        }
+        return new Vector3Int(x / vi.x, y / vi.y, z / vi.z);
     }
 }

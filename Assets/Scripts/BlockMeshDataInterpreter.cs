@@ -76,7 +76,6 @@ public static class BlockMeshDataInterpreter
     {
         // Create a game object and add components to it
         GameObject go = new GameObject();
-        go.name = "building " + i++;
         if (split)
         {
             go.tag = "atom";
@@ -85,9 +84,14 @@ public static class BlockMeshDataInterpreter
         else
         {
             if (building != null)
+            {
+                go.name = "building " + i++;
                 go.tag = "building";
+            }
             else
+            {
                 go.tag = "block";
+            }
 
             // Adding to dictrionary current building gameObject 
             // to later retrive through it specific building object/class
