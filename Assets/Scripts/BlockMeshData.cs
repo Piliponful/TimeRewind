@@ -65,19 +65,26 @@ public class BlockMeshData
 
     void generateVerts4Cube()
     {
-        // Add verts(of predefinded points) to list so that thay form a cube
-        if (!cubeScheme.neigbors.frontNeighbor)
-            addFrontFaceVerts();
-        if (!cubeScheme.neigbors.backNeighbor)
-            addBackFaceVerts();
-        if (!cubeScheme.neigbors.rightNeighbor)
-            addRightFaceVerts();
-        if (!cubeScheme.neigbors.leftNeighbor)
-            addLeftFaceVerts();
-        if (!cubeScheme.neigbors.topNeighbor)
-            addUpFaceVerts();
-        if (!cubeScheme.neigbors.bottomNeighbor)
-            addBottomFaceVerts();
+        if(cubeScheme.neigbors == null)
+        {
+            Verts4SingleCube();
+        }
+        else
+        {
+            // Add verts(of predefinded points) to list so that thay form a cube
+            if (!cubeScheme.neigbors.frontNeighbor)
+                addFrontFaceVerts();
+            if (!cubeScheme.neigbors.backNeighbor)
+                addBackFaceVerts();
+            if (!cubeScheme.neigbors.rightNeighbor)
+                addRightFaceVerts();
+            if (!cubeScheme.neigbors.leftNeighbor)
+                addLeftFaceVerts();
+            if (!cubeScheme.neigbors.topNeighbor)
+                addUpFaceVerts();
+            if (!cubeScheme.neigbors.bottomNeighbor)
+                addBottomFaceVerts();
+        }
     }
 
     void Verts4SingleCube()

@@ -56,6 +56,7 @@ public class Building
                         else
                         {
                             this.buildingScheme[x, y, z] = new BlockScheme(makeChildrenScheme(position), position, blockSize);
+                            //this.buildingScheme[x, y, z].visible = false;
                         }
                     }
                 }

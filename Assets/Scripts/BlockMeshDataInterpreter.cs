@@ -5,42 +5,58 @@ public static class BlockMeshDataInterpreter
 {
 
     static int i = 0;
+    static int trisIndexStart;
 
     public static Mesh buildingBlocks(Building building)
     {
-        // All data needed for mesh creation = (V, T, U)
-        // Declare all vars needed to generate rows of cube meshes
-        List<Vector3> verts = new List<Vector3>();
-        List<int> tris = new List<int>();
-        List<Vector2> uvs = new List<Vector2>();
+        MeshData meshData = new MeshData();
 
-        int trisIndexStart = 0;
-        // generating rows of cubes
-        for (int x = 0; x < building.width; x++)
+        meshData = blockBlocks(building.buildingScheme);
+        trisIndexStart = 0;
+
+        // returning result of the function that takes
+        // (V, T, U) and returns completed mesh
+        return buildingMesh(meshData.verts, meshData.tris, meshData.uvs);
+    }
+
+    private static MeshData blockBlocks(BlockScheme[,,] blockScheme)
+    {
+        MeshData meshData = new MeshData();
+
+        for (int x = 0; x < blockScheme.GetLength(0); x++)
         {
-            for (int y = 0; y < building.height; y++)
+            for (int y = 0; y < blockScheme.GetLength(1); y++)
             {
-                for (int z = 0; z < building.length; z++)
+                for (int z = 0; z < blockScheme.GetLength(2); z++)
                 {
-                    if (building.buildingScheme[x, y, z] == null)
+                    if (blockScheme[x, y, z] == null)
                         continue;
-                    if (!building.buildingScheme[x, y, z].visible)
-                        continue;
-                    BlockMeshData Cube = new BlockMeshData(building.buildingScheme[x, y, z], building.blockSize, trisIndexStart);
-                    Cube.generateCubeMeshData();
-                    trisIndexStart = Cube.triIndexEnd;
-
-                    verts.AddRange(Cube.verts);
-                    tris.AddRange(Cube.tris);
-                    uvs.AddRange(Cube.uvs);
+                    if (blockScheme[x, y, z].children == null)
+                    {
+                        if (!blockScheme[x, y, z].visible)
+                            continue;
+                        BlockMeshData Cube = new BlockMeshData(blockScheme[x, y, z], blockScheme[x, y, z].size, trisIndexStart);
+                        Cube.generateCubeMeshData();
+                        trisIndexStart = Cube.triIndexEnd;
+                        meshData.verts.AddRange(Cube.verts);
+                        meshData.tris.AddRange(Cube.tris);
+                        meshData.uvs.AddRange(Cube.uvs);
+                    }
+                    else
+                    {
+                        MeshData meshDataR = new MeshData();
+                        meshDataR = blockBlocks(blockScheme[x, y, z].children);
+                        meshData.verts.AddRange(meshDataR.verts);
+                        meshData.tris.AddRange(meshDataR.tris);
+                        meshData.uvs.AddRange(meshDataR.uvs);
+                    }
                 }
             }
         }
 
-        // returning result of the function that takes
-        // (V, T, U) and returns completed mesh
-        return buildingMesh(verts, tris, uvs);
+        return meshData;
     }
+
     public static Mesh oneSimpleCube(Vector3Int cubeSize)
     {
         List<Vector3> verts = new List<Vector3>();
@@ -57,6 +73,7 @@ public static class BlockMeshDataInterpreter
 
         return buildingMesh(verts, tris, uvs);
     }
+
     // Create Mesh from intput of verts, tris and uvs lists
     private static Mesh buildingMesh(List<Vector3> verts, List<int> tris, List<Vector2> uvs)
     {
@@ -119,5 +136,18 @@ public static class BlockMeshDataInterpreter
             BlockRewind.blockDictionary.Add(go, new PositionAndRotation(go.GetComponent<Rigidbody>()));
 
         return go;
+    }
+}
+
+public class MeshData
+{
+    public List<Vector3> verts;
+    public List<int> tris;
+    public List<Vector2> uvs;
+    public MeshData()
+    {
+        this.verts = new List<Vector3>();
+        this.tris = new List<int>();
+        this.uvs = new List<Vector2>();
     }
 }
