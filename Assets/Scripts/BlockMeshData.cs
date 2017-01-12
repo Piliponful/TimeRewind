@@ -37,16 +37,16 @@ public class BlockMeshData
         this.triIndexEnd = startIndex;
 
         // Front quad
-        LeftBottomP = new Vector3(x * sizeX + 0, y * sizeY + 0, z * sizeZ + sizeZ);
-        LeftUpperP = new Vector3(x * sizeX + 0, y * sizeY + sizeY, z * sizeZ + sizeZ);
-        RightBottomP = new Vector3(x * sizeX + sizeX, y * sizeY + 0, z * sizeZ + sizeZ);
-        RightUpperP = new Vector3(x * sizeX + sizeX, y * sizeY + sizeY, z * sizeZ + sizeZ);
+        LeftBottomP = new Vector3(x, y, z  + sizeZ);
+        LeftUpperP = new Vector3(x, y + sizeY, z + sizeZ);
+        RightBottomP = new Vector3(x + sizeX, y, z + sizeZ);
+        RightUpperP = new Vector3(x + sizeX, y + sizeY, z + sizeZ);
 
         // Back quad
-        BackleftBottomP = new Vector3(x * sizeX + 0, y * sizeY + 0, z * sizeZ);
-        BackLeftUpperP = new Vector3(x * sizeX + 0, y * sizeY + sizeY, z * sizeZ);
-        BackRightBottomP = new Vector3(x * sizeX + sizeX, y * sizeY + 0, z * sizeZ);
-        BackRightUpperP = new Vector3(x * sizeX + sizeX, y * sizeY + sizeY, z * sizeZ);
+        BackleftBottomP = new Vector3(x, y, z);
+        BackLeftUpperP = new Vector3(x, y + sizeY, z);
+        BackRightBottomP = new Vector3(x + sizeX, y, z);
+        BackRightUpperP = new Vector3(x + sizeX, y + sizeY, z);
     }
 
     public void generateCubeMeshData()

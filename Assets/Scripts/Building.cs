@@ -42,9 +42,26 @@ public class Building
                 for (int z = 0; z < length; z++)
                 {
                     if (Random.value > .5)
-                        continue;
+                        this.buildingScheme[x, y, z] = null;
                     else
-                        this.buildingScheme[x, y, z] = new BlockScheme(false, false, x, y, z, null, new Vector3Int(x, y, z));
+                        if(Random.value > .4)
+                            this.buildingScheme[x, y, z] = new BlockScheme(null, new Vector3Int(x, y, z).multiply(this.blockSize).add(this.worldPosition));
+                        else
+                            this.buildingScheme[x, y, z] = new BlockScheme(makeChildrenScheme)
+                }
+            }
+        }
+    }
+
+    public void makeChildrenScheme(BlockScheme[,,] children, Vector3Int childrenBlockSize, Vector3Int parentPosition)
+    {
+        for (int x = 0; x < children.GetLength(0); x++)
+        {
+            for (int y = 0; y < children.GetLength(1); y++)
+            {
+                for (int z = 0; z < children.GetLength(2); z++)
+                {
+                    children[x, y, z] = new BlockScheme(null, parentPosition.add(new Vector3Int(x, y, z)));
                 }
             }
         }
@@ -71,7 +88,6 @@ public class Building
     public BlockScheme setBlockInvisible(Vector3 point)
     {
         Vector3Int poInt = Vector3Int.toV3Int(point).floorToMultipleOfSize();
-        //Debug.Log("Point: " + poInt);
 
         for (int x = 0; x < this.width; x++)
         {
@@ -82,11 +98,9 @@ public class Building
                     if (this.buildingScheme[x, y, z] == null)
                         continue;
 
-                    Vector3Int blockPosition = this.buildingScheme[x, y, z].position.add(worldPosition).multiply(blockSize);
-                    //Debug.Log("BlockPosition: " + blockPosition);
-                    if (poInt.compare(blockPosition))
+                    if (poInt.compare(buildingScheme[x, y, z].position))
                     {
-                        this.buildingScheme[x, y, z].visible = false;
+                        buildingScheme[x, y, z].visible = false;
                         return buildingScheme[x, y, z];
                     }
                 }
@@ -97,15 +111,11 @@ public class Building
 
     public void splitBlock(BlockScheme blockScheme, Vector3Int cubeSize = null)
     {
-        //BlockRewind.blocksPos.Add(pos);
-        Vector3Int worldPosition = blockScheme.position.add(this.worldPosition).multiply(blockSize);
-        int xWorld = worldPosition.x, yWorld = worldPosition.y, zWorld = worldPosition.y;
-
-        for (int x = xWorld; x < xWorld + this.blockSize.x; x++)
+        for (int x = blockScheme.position.x; x < blockScheme.position.x + this.blockSize.x; x++)
         {
-            for (int y = yWorld; y < yWorld + this.blockSize.y; y++)
+            for (int y = blockScheme.position.y; y < blockScheme.position.y + this.blockSize.y; y++)
             {
-                for (int z = zWorld; z < zWorld + this.blockSize.z; z++)
+                for (int z = blockScheme.position.z; z < blockScheme.position.z + this.blockSize.z; z++)
                 {
                     BlockMeshDataInterpreter.buildingGameObject(
                     BlockMeshDataInterpreter.oneSimpleCube(new Vector3Int(1, 1, 1)),
