@@ -16,6 +16,7 @@ public class BlockMeshData
     public List<Vector3> verts = new List<Vector3>();
     public List<int> tris = new List<int>();
     public List<Vector2> uvs = new List<Vector2>();
+    public List<Vector3> normals = new List<Vector3>();
     // ======================END==================
 
     private int triIndexStart;
@@ -68,6 +69,7 @@ public class BlockMeshData
         if(cubeScheme.neigbors == null)
         {
             Verts4SingleCube();
+            normals4SimpleCube();
         }
         else
         {
@@ -97,16 +99,35 @@ public class BlockMeshData
             addBottomFaceVerts();
     }
 
-    List<Vector3> generateVerts4Quad(Vector3 p1, Vector3 p2, Vector3 p3, Vector3 p4)
+    void generateVerts4Quad(Vector3 p1, Vector3 p2, Vector3 p3, Vector3 p4)
     {
-        List<Vector3> verts = new List<Vector3>();
-
         verts.Add(p1);
         verts.Add(p2);
         verts.Add(p3);
         verts.Add(p4);
+    }
 
-        return verts;
+    void normals4SimpleCube()
+    {
+        // North side of a cube
+        generateNormals4Quad(RightBottomP, RightUpperP, LeftUpperP, LeftBottomP);
+        // South side of a cube
+        generateNormals4Quad(BackleftBottomP, BackLeftUpperP, BackRightUpperP, BackRightBottomP);
+        // East side of a cube
+        generateNormals4Quad(BackRightBottomP, BackRightUpperP, RightUpperP, RightBottomP);
+        // West side of a cube
+        generateNormals4Quad(LeftBottomP, LeftUpperP, BackLeftUpperP, BackleftBottomP);
+
+        generateNormals4Quad(BackRightUpperP, BackLeftUpperP, LeftUpperP, RightUpperP);
+        generateNormals4Quad(BackleftBottomP, BackRightBottomP, RightBottomP, LeftBottomP);
+    }
+
+    void generateNormals4Quad(Vector3 p1, Vector3 p2, Vector3 p3, Vector3 p4)
+    {
+        normals.Add(p1);
+        normals.Add(p2);
+        normals.Add(p3);
+        normals.Add(p4);
     }
 
     void generateTris4Cube()
@@ -114,15 +135,12 @@ public class BlockMeshData
         // 6 times for each of cube face
         for (int i = this.triIndexStart; i < this.triIndexEnd; i++)
         {
-            tris.AddRange(generateTris4Quad(i));
+            generateTris4Quad(i);
         }
     }
 
-    List<int> generateTris4Quad(int iteration)
+    void generateTris4Quad(int iteration)
     {
-        // Declare list of tris
-        List<int> tris = new List<int>();
-
         // Adding tris to list
 
         // on each iteration we use 4 verts to make 2 triangles that make up quad
@@ -134,8 +152,6 @@ public class BlockMeshData
         tris.Add(iteration * 4 + 2);
         tris.Add(iteration * 4 + 3);
         tris.Add(iteration * 4 + 0);
-
-        return tris;
     }
 
     void generateUvs4Cube()
@@ -167,46 +183,46 @@ public class BlockMeshData
     void addFrontFaceVerts()
     {
         // North side of a cube
-        verts.AddRange(
-        generateVerts4Quad(RightBottomP, RightUpperP, LeftUpperP, LeftBottomP));
+        generateVerts4Quad(RightBottomP, RightUpperP, LeftUpperP, LeftBottomP);
+        generateNormals4Quad(RightBottomP, RightUpperP, LeftUpperP, LeftBottomP);
         this.triIndexEnd++;
     }
 
     void addBackFaceVerts()
     {
         // South side of a cube
-        verts.AddRange(
-        generateVerts4Quad(BackleftBottomP, BackLeftUpperP, BackRightUpperP, BackRightBottomP));
+        generateVerts4Quad(BackleftBottomP, BackLeftUpperP, BackRightUpperP, BackRightBottomP);
+        generateNormals4Quad(BackleftBottomP, BackLeftUpperP, BackRightUpperP, BackRightBottomP);
         this.triIndexEnd++;
     }
 
     void addRightFaceVerts()
     {
         // East side of a cube
-        verts.AddRange(
-        generateVerts4Quad(BackRightBottomP, BackRightUpperP, RightUpperP, RightBottomP));
+        generateVerts4Quad(BackRightBottomP, BackRightUpperP, RightUpperP, RightBottomP);
+        generateNormals4Quad(BackRightBottomP, BackRightUpperP, RightUpperP, RightBottomP);
         this.triIndexEnd++;
     }
 
     void addLeftFaceVerts()
     {
         // West side of a cube
-        verts.AddRange(
-        generateVerts4Quad(LeftBottomP, LeftUpperP, BackLeftUpperP, BackleftBottomP));
+        generateVerts4Quad(LeftBottomP, LeftUpperP, BackLeftUpperP, BackleftBottomP);
+        generateNormals4Quad(LeftBottomP, LeftUpperP, BackLeftUpperP, BackleftBottomP);
         this.triIndexEnd++;
     }
 
     void addUpFaceVerts()
     {
-        verts.AddRange(
-        generateVerts4Quad(BackRightUpperP, BackLeftUpperP, LeftUpperP, RightUpperP));
+        generateVerts4Quad(BackRightUpperP, BackLeftUpperP, LeftUpperP, RightUpperP);
+        generateNormals4Quad(BackRightUpperP, BackLeftUpperP, LeftUpperP, RightUpperP);
         this.triIndexEnd++;
     }
 
     void addBottomFaceVerts()
     {
-        verts.AddRange(
-        generateVerts4Quad(BackleftBottomP, BackRightBottomP, RightBottomP, LeftBottomP));
+        generateVerts4Quad(BackleftBottomP, BackRightBottomP, RightBottomP, LeftBottomP);
+        generateNormals4Quad(BackleftBottomP, BackRightBottomP, RightBottomP, LeftBottomP);
         this.triIndexEnd++;
     }
 }

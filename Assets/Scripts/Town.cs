@@ -4,6 +4,7 @@ using UnityEngine;
 public static class Town {
     // Register of all buildings in city
     public static Dictionary<GameObject, Building> buildings = new Dictionary<GameObject, Building>();
+    public static Dictionary<Building, GameObject> buildingsByClass = new Dictionary<Building, GameObject>();
 
     static Main mainThread;
 

@@ -28,12 +28,18 @@ public class Building
         computeNeighbors();
     }
 
-    public void makeBuilding()
+    public GameObject makeBuilding()
     {
-        BlockMeshDataInterpreter.buildingGameObject(
+        return BlockMeshDataInterpreter.buildingGameObject(
         BlockMeshDataInterpreter.buildingBlocks(this),
         worldPosition,
         true, false, this);
+    }
+
+    public GameObject reBuild()
+    {
+        computeNeighbors();
+        return makeBuilding();
     }
 
     public void makeBuildingScheme()
@@ -203,7 +209,7 @@ public class Building
                     BlockMeshDataInterpreter.buildingGameObject(
                     BlockMeshDataInterpreter.oneSimpleCube(new Vector3Int(1, 1, 1)),
                     new Vector3(x, y, z),
-                    true, true, null);
+                    false, true, null);
                 }
             }
         }

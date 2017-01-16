@@ -14,8 +14,11 @@ public class Main : MonoBehaviour
     // Gap between individual cubeHolders
     public int gutter = 2;
 
+    public static Material material;
+
     void Start()
     {
+        material = Resources.Load("cube") as Material;
         // Town init
         Town.MainThread = this;
 

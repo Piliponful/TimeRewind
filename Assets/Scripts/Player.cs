@@ -41,12 +41,13 @@ public class Player : MonoBehaviour {
                 {
                     BlockScheme b = Town.buildings[something].setBlockInvisible(h.point);
                     Destroy(something);
-                    Town.buildings[something].computeNeighbors();
-                    Town.buildings[something].makeBuilding();
+                    GameObject newBuilding = Town.buildings[something].reBuild();
                     Town.buildings[something].splitBlock(b);
-                    //GBAlgManager.splitIntoCubes(h.collider.gameObject);
-                    //bc.isRecording = true;
-                    //addForce(h.point);
+                    BlockRewind.block = b;
+                    BlockRewind.building = Town.buildings[something];
+                    BlockRewind.buildingGO = newBuilding;
+                    BlockRewind.isRecording = true;
+                    addForce(h.point);
                 }
                 if(h.collider != null && something.tag == "enemy_body_part")
                 {
