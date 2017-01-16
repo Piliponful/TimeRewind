@@ -46,18 +46,23 @@ public class Vector3Int
         return "(" + this.x + ", " + this.y + ", " + this.z + ")";
     }
 
-    public Vector3Int floorToMultipleOfSize()
+    public Vector3Int floorToMultipleOfSize(Vector3Int k)
     {
-        return new Vector3Int(multipleOfSize(this.x), multipleOfSize(this.y), multipleOfSize(this.z));
+        return new Vector3Int(multipleOfSize(x, k.x), multipleOfSize(y, k.y), multipleOfSize(z, k.z));
     }
 
-    private int multipleOfSize (int x)
+    public Vector3Int floor()
+    {
+        return new Vector3Int(Mathf.FloorToInt(x), Mathf.FloorToInt(y), Mathf.FloorToInt(z));
+    }
+
+    private int multipleOfSize (int x, int k = 0)
     {
         foreach (int num in Utils.NaturalNumbers())
         {
             int multiple = 6;
-            int curMultiple = multiple * num;
-            if (x < curMultiple)
+            int curMultiple = k + multiple * num;
+            if (x <= curMultiple)
             {
                 x = curMultiple - multiple;
                 break;
@@ -70,4 +75,7 @@ public class Vector3Int
     {
         return new Vector3Int(x / vi.x, y / vi.y, z / vi.z);
     }
+
+    public static Vector3Int zero = new Vector3Int(0, 0, 0);
+    public static Vector3Int one = new Vector3Int(1, 1, 1);
 }

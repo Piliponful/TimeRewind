@@ -7,7 +7,7 @@ public class Building
     public int widthOfSingleBlock, heightOfSingleBlock, lengthOfSingleBlock;
     public Vector3Int blockSize;
     public BlockScheme[,,] buildingScheme;
-    private Vector3 worldPosition;
+    public Vector3 worldPosition;
     public Vector3Int childDimensions;
 
     public Building(int width, int height, int length, Vector3Int blockSize, Vector3 worldPosition, Vector3Int childDimensions)
@@ -56,7 +56,7 @@ public class Building
                     }
                     else
                     {
-                        Vector3Int position = new Vector3Int(x, y, z).multiply(this.blockSize).add(this.worldPosition);
+                        Vector3Int position = new Vector3Int(x, y, z).multiply(this.blockSize);
                         if(Random.value > .5)
                         {
                             this.buildingScheme[x, y, z] = new BlockScheme(null, null, position, blockSize);
@@ -176,7 +176,7 @@ public class Building
 
     public BlockScheme setBlockInvisible(Vector3 point)
     {
-        Vector3Int poInt = Vector3Int.toV3Int(point).floorToMultipleOfSize();
+        Vector3Int poInt = Vector3Int.toV3Int(point).floorToMultipleOfSize(Vector3Int.toV3Int(worldPosition));
 
         for (int x = 0; x < this.width; x++)
         {
@@ -187,7 +187,7 @@ public class Building
                     if (this.buildingScheme[x, y, z] == null)
                         continue;
 
-                    if (poInt.compare(buildingScheme[x, y, z].position))
+                    if (poInt.compare(buildingScheme[x, y, z].position.add(this.worldPosition)))
                     {
                         buildingScheme[x, y, z].visible = false;
                         return buildingScheme[x, y, z];
@@ -200,14 +200,15 @@ public class Building
 
     public void splitBlock(BlockScheme blockScheme, Vector3Int cubeSize = null)
     {
-        for (int x = blockScheme.position.x; x < blockScheme.position.x + this.blockSize.x; x++)
+        Vector3Int position = blockScheme.position.add(this.worldPosition);
+        for (int x = position.x; x < position.x + this.blockSize.x; x++)
         {
-            for (int y = blockScheme.position.y; y < blockScheme.position.y + this.blockSize.y; y++)
+            for (int y = position.y; y < position.y + this.blockSize.y; y++)
             {
-                for (int z = blockScheme.position.z; z < blockScheme.position.z + this.blockSize.z; z++)
+                for (int z = position.z; z < position.z + this.blockSize.z; z++)
                 {
                     BlockMeshDataInterpreter.buildingGameObject(
-                    BlockMeshDataInterpreter.oneSimpleCube(new Vector3Int(1, 1, 1)),
+                    BlockMeshDataInterpreter.oneSimpleCube(Vector3Int.one),
                     new Vector3(x, y, z),
                     false, true, null);
                 }
