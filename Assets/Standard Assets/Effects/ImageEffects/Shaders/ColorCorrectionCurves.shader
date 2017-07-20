@@ -40,7 +40,7 @@ Shader "Hidden/ColorCorrectionCurves" {
 	v2f vert( appdata_img v ) 
 	{
 		v2f o;
-		o.pos = mul(UNITY_MATRIX_MVP, v.vertex);
+		o.pos = UnityObjectToClipPos(v.vertex);
 		o.uv = UnityStereoScreenSpaceUVAdjust(v.texcoord.xy, _MainTex_ST);
 		o.uv2 = TRANSFORM_TEX(v.texcoord, _CameraDepthTexture);
 		

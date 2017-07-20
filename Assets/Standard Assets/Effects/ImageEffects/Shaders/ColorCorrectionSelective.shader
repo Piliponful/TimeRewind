@@ -20,7 +20,7 @@ Shader "Hidden/ColorCorrectionSelective" {
 	
 	v2f vert( appdata_img v ) {
 		v2f o;
-		o.pos = mul (UNITY_MATRIX_MVP, v.vertex);
+		o.pos = UnityObjectToClipPos(v.vertex);
 		o.uv = UnityStereoScreenSpaceUVAdjust(v.texcoord.xy, _MainTex_ST);
 		return o;
 	}

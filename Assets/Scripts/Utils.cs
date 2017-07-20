@@ -4,7 +4,7 @@ public static class Utils
 {
     public static IEnumerable<int> NaturalNumbers()
     {
-        int value = 1;
+        int value = 0;
         for (;;)
         {
             value++;

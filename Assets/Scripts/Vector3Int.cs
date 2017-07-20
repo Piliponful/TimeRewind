@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 [System.Serializable]
 public class Vector3Int
@@ -47,18 +46,23 @@ public class Vector3Int
         return "(" + this.x + ", " + this.y + ", " + this.z + ")";
     }
 
-    public Vector3Int floorToMultipleOfSize()
+    public Vector3Int floorToMultipleOfSize(Vector3Int k)
     {
-        return new Vector3Int(multipleOfSize(this.x), multipleOfSize(this.y), multipleOfSize(this.z));
+        return new Vector3Int(multipleOfSize(x, k.x), multipleOfSize(y, k.y), multipleOfSize(z, k.z));
     }
 
-    private int multipleOfSize (int x)
+    public Vector3Int floor()
+    {
+        return new Vector3Int(Mathf.FloorToInt(x), Mathf.FloorToInt(y), Mathf.FloorToInt(z));
+    }
+
+    private int multipleOfSize (int x, int k = 0)
     {
         foreach (int num in Utils.NaturalNumbers())
         {
             int multiple = 6;
-            int curMultiple = multiple * num;
-            if (x < curMultiple)
+            int curMultiple = k + multiple * num;
+            if (x <= curMultiple)
             {
                 x = curMultiple - multiple;
                 break;
@@ -67,13 +71,11 @@ public class Vector3Int
         return x;
     }
 
-    public bool mod(Vector3Int n)
-    {
-        return this.x % n.x == 0 && this.y % n.y == 0 && this.z % n.z == 0;
-    }
-    
     public Vector3Int div(Vector3Int vi)
     {
-        return new Vector3Int(this.x / vi.x, this.y / vi.y, this.z / vi.z);
+        return new Vector3Int(x / vi.x, y / vi.y, z / vi.z);
     }
+
+    public static Vector3Int zero = new Vector3Int(0, 0, 0);
+    public static Vector3Int one = new Vector3Int(1, 1, 1);
 }

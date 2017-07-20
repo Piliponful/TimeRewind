@@ -4,6 +4,7 @@ using UnityEngine;
 public static class Town {
     // Register of all buildings in city
     public static Dictionary<GameObject, Building> buildings = new Dictionary<GameObject, Building>();
+    public static Dictionary<Building, GameObject> buildingsByClass = new Dictionary<Building, GameObject>();
 
     static Main mainThread;
 
@@ -46,7 +47,7 @@ public static class Town {
             {
                 Vector3 buildingWorldPosition = new Vector3(x * cubeSize.x * buildingWidth + (x * gutter), 0,
                 z * cubeSize.z * buildingLength + (z * gutter));
-                Building building = new Building(buildingWidth, buildingHeight, buildingLength, cubeSize, buildingWorldPosition, null);
+                Building building = new Building(buildingWidth, buildingHeight, buildingLength, cubeSize, buildingWorldPosition, new Vector3Int(3, 3, 3));
                 building.computeBuilding();
                 building.makeBuilding();
             }

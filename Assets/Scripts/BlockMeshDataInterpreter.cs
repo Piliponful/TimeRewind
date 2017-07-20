@@ -5,23 +5,24 @@ public static class BlockMeshDataInterpreter
 {
 
     static int i = 0;
+    static int trisIndexStart;
 
     public static Mesh buildingBlocks(Building building)
     {
         MeshData meshData = new MeshData();
 
         meshData = blockBlocks(building.buildingScheme);
+        trisIndexStart = 0;
 
         // returning result of the function that takes
         // (V, T, U) and returns completed mesh
-        return buildingMesh(meshData.verts, meshData.tris, meshData.uvs);
+        return buildingMesh(meshData.verts, meshData.tris, meshData.uvs, meshData.normals);
     }
 
     private static MeshData blockBlocks(BlockScheme[,,] blockScheme)
     {
         MeshData meshData = new MeshData();
-        
-        int trisIndexStart = 0;
+
         for (int x = 0; x < blockScheme.GetLength(0); x++)
         {
             for (int y = 0; y < blockScheme.GetLength(1); y++)
@@ -30,16 +31,17 @@ public static class BlockMeshDataInterpreter
                 {
                     if (blockScheme[x, y, z] == null)
                         continue;
-                    if(blockScheme[x, y, z].children == null)
+                    if (blockScheme[x, y, z].children == null)
                     {
                         if (!blockScheme[x, y, z].visible)
                             continue;
-                        BlockMeshData Cube = new BlockMeshData(blockScheme[x, y, z], blockScheme[x, y, z].blockSize, trisIndexStart);
+                        BlockMeshData Cube = new BlockMeshData(blockScheme[x, y, z], blockScheme[x, y, z].size, trisIndexStart);
                         Cube.generateCubeMeshData();
                         trisIndexStart = Cube.triIndexEnd;
                         meshData.verts.AddRange(Cube.verts);
                         meshData.tris.AddRange(Cube.tris);
                         meshData.uvs.AddRange(Cube.uvs);
+                        meshData.normals.AddRange(Cube.normals);
                     }
                     else
                     {
@@ -48,6 +50,7 @@ public static class BlockMeshDataInterpreter
                         meshData.verts.AddRange(meshDataR.verts);
                         meshData.tris.AddRange(meshDataR.tris);
                         meshData.uvs.AddRange(meshDataR.uvs);
+                        meshData.normals.AddRange(meshDataR.normals);
                     }
                 }
             }
@@ -61,6 +64,7 @@ public static class BlockMeshDataInterpreter
         List<Vector3> verts = new List<Vector3>();
         List<int> tris = new List<int>();
         List<Vector2> uvs = new List<Vector2>();
+        List<Vector3> normals = new List<Vector3>();
 
         BlockMeshData Cube = new BlockMeshData(null, cubeSize, 0);
 
@@ -69,11 +73,13 @@ public static class BlockMeshDataInterpreter
         verts.AddRange(Cube.verts);
         tris.AddRange(Cube.tris);
         uvs.AddRange(Cube.uvs);
+        normals.AddRange(Cube.normals);
 
-        return buildingMesh(verts, tris, uvs);
+        return buildingMesh(verts, tris, uvs, normals);
     }
+
     // Create Mesh from intput of verts, tris and uvs lists
-    private static Mesh buildingMesh(List<Vector3> verts, List<int> tris, List<Vector2> uvs)
+    private static Mesh buildingMesh(List<Vector3> verts, List<int> tris, List<Vector2> uvs, List<Vector3> normals)
     {
         // Create a mesh and assign props needed
         Mesh mesh = new Mesh();
@@ -82,27 +88,41 @@ public static class BlockMeshDataInterpreter
         mesh.SetVertices(verts);
         mesh.SetTriangles(tris, 0);
         mesh.SetUVs(0, uvs);
-        mesh.RecalculateNormals();
+        mesh.SetNormals(normals);
+        //mesh.RecalculateNormals();
 
         return mesh;
     }
     // Create GameObject that will hold mesh we entered
     public static GameObject buildingGameObject(Mesh mesh, Vector3 position, bool isKinematic, bool split, Building building)
     {
-        // Create a game object and add components to it
         GameObject go = new GameObject();
-        go.name = "building " + i++;
+        // Add Components that crucial for rendering mesh and collision detection
+        go.AddComponent<MeshFilter>().sharedMesh = mesh; // Assign mesh from input
+        go.AddComponent<MeshRenderer>().material = Main.material; // Assign material
+        if (split)
+            go.AddComponent<BoxCollider>();
+        else
+            go.AddComponent<MeshCollider>().sharedMesh = mesh;
+        go.AddComponent<Rigidbody>().isKinematic = isKinematic;
+        // Create a game object and add components to it
         if (split)
         {
             go.tag = "atom";
             go.name = "cube";
+            BlockRewind.blockDictionary.Add(go, new PositionAndRotation(go.GetComponent<Rigidbody>()));
         }
         else
         {
             if (building != null)
+            {
+                go.name = "building " + i++;
                 go.tag = "building";
+            }
             else
+            {
                 go.tag = "block";
+            }
 
             // Adding to dictrionary current building gameObject 
             // to later retrive through it specific building object/class
@@ -110,39 +130,10 @@ public static class BlockMeshDataInterpreter
             Town.buildings.Add(go, building);
         }
 
-        // Add Components that crucial for rendering mesh and collision detection
-        go.AddComponent<MeshFilter>();
-        go.AddComponent<MeshRenderer>();
-        go.AddComponent<MeshCollider>();
-        go.AddComponent<Rigidbody>();
-
-        // Assign components
-        go.GetComponent<Rigidbody>().isKinematic = isKinematic;
-        go.GetComponent<MeshCollider>().convex = !isKinematic;
-        go.GetComponent<MeshFilter>().sharedMesh = mesh; // Assign mesh from input
-        go.GetComponent<MeshCollider>().sharedMesh = mesh; // Assign mesh from input
-        go.GetComponent<MeshRenderer>().material = Resources.Load("cube") as Material; // Assign material
 
         // Assign position
         go.transform.position = position;
 
-        if (split)
-            BlockRewind.blockDictionary.Add(go, new PositionAndRotation(go.GetComponent<Rigidbody>()));
-
         return go;
-    }
-}
-
-public class MeshData
-{
-    public List<Vector3> verts;
-    public List<int> tris;
-    public List<Vector2> uvs;
-
-    public MeshData()
-    {
-        this.verts = new List<Vector3>();
-        this.tris = new List<int>();
-        this.uvs = new List<Vector2>();
     }
 }

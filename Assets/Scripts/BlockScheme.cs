@@ -1,20 +1,17 @@
 ﻿public class BlockScheme
 {
-    public BlockScheme parent;
     public BlockScheme[,,] children;
-    public BlockScheme[,,] parentBlockSchemes;
+    public BlockScheme parent;
     public Vector3Int position;
-    public Neighbors neighbors;
+    public Vector3Int size;
+    public Neighbors neigbors;
     public bool visible;
-    public Vector3Int blockSize;
-    public BlockScheme(BlockScheme[,,] children, Vector3Int position, Vector3Int blockSize,
-        BlockScheme[,,] parentBlockSchemes = null, BlockScheme parent = null)
+    public BlockScheme(BlockScheme[,,] children, BlockScheme parent, Vector3Int position, Vector3Int size)
     {
         this.children = children;
         this.position = position;
+        this.size = size;
         this.visible = true;
         this.parent = parent;
-        this.blockSize = blockSize;
-        this.parentBlockSchemes = parentBlockSchemes;
     }
 }

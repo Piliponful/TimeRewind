@@ -4,8 +4,10 @@ using System.Collections.Generic;
 public static class BlockRewind
 {
     public static Dictionary<GameObject, PositionAndRotation> blockDictionary = new Dictionary<GameObject, PositionAndRotation>();
-    public static List<Vector3> blocksPos = new List<Vector3>();
-    private static bool isRecording = false, isRewinding = false;
+    public static bool isRecording = false, isRewinding = false;
+    public static BlockScheme block;
+    public static Building building;
+    public static GameObject buildingGO;
 
     public static void ToUpdate()
     {
@@ -53,15 +55,12 @@ public static class BlockRewind
         if (done)
         {
             foreach (GameObject cube in blockDictionary.Keys)
-            {
                 GameObject.DestroyImmediate(cube);
-            }
-            foreach (Vector3 pos in blocksPos)
-            {
-                //gb.generateMeshHolder(gb.generateRowsOfCubeMeshes(1, 1, 1, 1, 1, 1), pos, true, false, pos);
-            }
+            block.visible = true;
+            GameObject.Destroy(buildingGO);
+            building.reBuild();
+
             blockDictionary.Clear();
-            blocksPos.Clear();
             isRecording = isRewinding = false;
         }
     }
