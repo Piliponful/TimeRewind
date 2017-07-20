@@ -47,7 +47,7 @@
 	v2f vert( appdata_img v ) 
 	{
 		v2f o;
-		o.pos = mul (UNITY_MATRIX_MVP, v.vertex);
+		o.pos = UnityObjectToClipPos(v.vertex);
 		o.uv1.xy = v.texcoord.xy;
 		o.uv.xy = v.texcoord.xy;
 		
@@ -62,7 +62,7 @@
 	v2f vertFlip( appdata_img v ) 
 	{
 		v2f o;
-		o.pos = mul (UNITY_MATRIX_MVP, v.vertex);
+		o.pos = UnityObjectToClipPos(v.vertex);
 		o.uv1.xy = v.texcoord.xy;
 		o.uv.xy = v.texcoord.xy;
 		
@@ -79,7 +79,7 @@
 	v2fBlur vertBlurPlusMinus (appdata_img v) 
 	{
 		v2fBlur o;
-		o.pos = mul(UNITY_MATRIX_MVP, v.vertex);
+		o.pos = UnityObjectToClipPos(v.vertex);
 		o.uv.xy = UnityStereoScreenSpaceUVAdjust(v.texcoord.xy, _MainTex_ST);
 		o.uv01 =  UnityStereoScreenSpaceUVAdjust(v.texcoord.xyxy + _Offsets.xyxy * float4(1,1, -1,-1) * _MainTex_TexelSize.xyxy / 6.0, _MainTex_ST);
 		o.uv23 =  UnityStereoScreenSpaceUVAdjust(v.texcoord.xyxy + _Offsets.xyxy * float4(2,2, -2,-2) * _MainTex_TexelSize.xyxy / 6.0, _MainTex_ST);

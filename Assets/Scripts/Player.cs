@@ -3,11 +3,20 @@ using UnityEngine.UI;
 using UnityStandardAssets.ImageEffects;
 
 public class Player : MonoBehaviour {
-
-    public float movementSpeed = 5, rotationSpeed = 60, forceMagnitude = 30000, forcePushEnemy = 1000; GameObject forceUI;
-    private Main GBAlgManager;
     Camera cam;
     Main main;
+    Animator animator;
+
+    public float movementSpeed = 5, rotationSpeed = 60, forceMagnitude = 30000, forcePushEnemy = 1000; GameObject forceUI;
+
+    float walkSpeed = 2f, runSpeed = 6f;
+
+    float turnSmoothTime = .15f;
+    float turnSmoothVelocity;
+
+    float speedSmoothTime = .1f;
+    float speedSmoothVelocity;
+    float currentSpeed;
 
     void Start ()
     {
@@ -15,20 +24,33 @@ public class Player : MonoBehaviour {
         forceUI.GetComponent<Text>().text = forceMagnitude.ToString();
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
-        cam = FindObjectOfType<Camera>();
+        cam = GetComponentInChildren<Camera>();
         main = FindObjectOfType<Main>();
+        animator = GetComponent<Animator>();
     }
 	
 	void Update ()
     {
-        float hMove = Input.GetAxis("Horizontal") * movementSpeed * Time.deltaTime;
-        float vMove = Input.GetAxis("Vertical") * movementSpeed * Time.deltaTime;
-        float hRotate = Input.GetAxis("Mouse X") * rotationSpeed * Time.deltaTime;
-        float vRotate = Input.GetAxis("Mouse Y") * rotationSpeed * Time.deltaTime;
+        Vector2 rotation = new Vector2(Input.GetAxisRaw("Mouse X"), -Input.GetAxisRaw("Mouse Y")) * rotationSpeed * Time.deltaTime;
+        Vector2 dir = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical")).normalized;
+        bool running = Input.GetKey(KeyCode.LeftShift);
 
-        transform.Translate(hMove, 0, vMove);
-        transform.Rotate(0, hRotate, 0, Space.World);
-        cam.transform.Rotate(-vRotate, 0, 0, Space.Self);
+        float targetSpeed = (running ? runSpeed : walkSpeed) * dir.magnitude;
+        currentSpeed = Mathf.SmoothDamp(currentSpeed, targetSpeed, ref speedSmoothVelocity, speedSmoothTime);
+        transform.Translate(transform.forward * currentSpeed * Time.deltaTime, Space.World);
+
+        if(dir != Vector2.zero)
+        {
+            float targetRotation = Mathf.Atan2(dir.x, dir.y) * Mathf.Rad2Deg;
+            transform.eulerAngles = Vector2.up * Mathf.SmoothDampAngle(transform.eulerAngles.y, targetRotation, ref turnSmoothVelocity, turnSmoothTime);
+        }
+
+        float speedNormalized = (running ? 1 : .5f) * dir.magnitude;
+        // Set animation type
+        animator.SetFloat("speed", speedNormalized, speedSmoothTime, Time.deltaTime);
+
+        cam.transform.Rotate(0, rotation.x, 0, Space.World);
+        cam.transform.Rotate(rotation.y, 0, 0, Space.Self);
 
         if (Input.GetKeyDown(KeyCode.Mouse0))
         {

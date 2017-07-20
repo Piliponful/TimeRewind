@@ -47,7 +47,7 @@ Shader "Hidden/NoiseAndGrain" {
 		{
 			v2f o;
 			
-			o.pos = mul (UNITY_MATRIX_MVP, v.vertex);	
+			o.pos = UnityObjectToClipPos(v.vertex);	
 			
 		#if UNITY_UV_STARTS_AT_TOP
 			o.uv_screen = v.vertex.xyxy;

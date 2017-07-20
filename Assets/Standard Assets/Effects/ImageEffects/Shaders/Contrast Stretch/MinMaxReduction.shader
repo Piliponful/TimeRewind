@@ -26,7 +26,7 @@ half4 _MainTex_ST;
 
 v2f vert (appdata_img v) {
 	v2f o;
-	o.position = mul (UNITY_MATRIX_MVP, v.vertex);
+	o.position = UnityObjectToClipPos(v.vertex);
 	float2 uv = MultiplyUV (UNITY_MATRIX_TEXTURE0, v.texcoord);
 	
 	// Compute UVs to sample 2x2 pixel block.

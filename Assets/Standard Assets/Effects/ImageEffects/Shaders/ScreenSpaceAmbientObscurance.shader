@@ -30,7 +30,7 @@ Shader "Hidden/ScreenSpaceAmbientObscurance"
 
 	#include "UnityCG.cginc"
 
-	#ifdef SHADER_API_D3D11
+	#if defined(SHADER_API_D3D11) || defined(SHADER_API_GLCORE)
 		#define NUM_SAMPLES (15)
 	#else
 		#define NUM_SAMPLES (11)
@@ -82,7 +82,7 @@ Shader "Hidden/ScreenSpaceAmbientObscurance"
 	v2f vert( appdata_img v )
 	{
 		v2f o;
-		o.pos = mul(UNITY_MATRIX_MVP, v.vertex);
+		o.pos = UnityObjectToClipPos(v.vertex);
 		o.uv = v.texcoord.xy;
 		o.uv2 = v.texcoord.xy;
 		#if UNITY_UV_STARTS_AT_TOP
@@ -222,7 +222,7 @@ Shader "Hidden/ScreenSpaceAmbientObscurance"
 		//packKey(CSZToKey(C.z), bilateralKey);
 
 		float randomPatternRotationAngle = 1.0;
-		#ifdef SHADER_API_D3D11
+	#if defined(SHADER_API_D3D11) || defined(SHADER_API_GLCORE)
 			int2 ssCInt = ssC.xy * _MainTex_TexelSize.zw;
 			randomPatternRotationAngle = frac(sin(dot(i.uv, float2(12.9898, 78.233))) * 43758.5453) * 1000.0;
 		#else

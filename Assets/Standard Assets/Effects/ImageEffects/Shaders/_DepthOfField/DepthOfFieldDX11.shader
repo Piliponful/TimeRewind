@@ -161,7 +161,7 @@ Pass
 	v2f vert (appdata v)
 	{
 		v2f o;
-		o.pos = mul (UNITY_MATRIX_MVP, v.vertex);
+		o.pos = UnityObjectToClipPos(v.vertex);
 		o.uv = UnityStereoScreenSpaceUVAdjust(v.texcoord, _MainTex_ST);
 		o.uv_flip = UnityStereoScreenSpaceUVAdjust(v.texcoord, _MainTex_ST);
 		#if UNITY_UV_STARTS_AT_TOP
